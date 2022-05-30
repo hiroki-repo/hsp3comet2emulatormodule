@@ -87,7 +87,7 @@ register(9,vmidtmp)++:return (wpeek(register((peek(opcodetemp,1)>>0)&0xF,vmidtmp
 #deffunc comet2run var address,var memory,int vmid
 dup memoryiex,memory
 #endif
-addressold=lpeek(address,0):register(9,vmidtmp)=address:vmidtmp=vmid:opcodetemp=comet2memread(register(9,vmidtmp)):register(9,vmidtmp)++
+addressold=lpeek(address,0):vmidtmp=vmid:register(9,vmidtmp)=address:opcodetemp=comet2memread(register(9,vmidtmp)):register(9,vmidtmp)++
 gosub opcode(peek(opcodetemp,1))
 address=register(9,vmidtmp)
 return address-addressold
