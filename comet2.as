@@ -79,7 +79,7 @@ wpoke memoryiex,((prm_0&0xFFFF)*2),(((prm_1>>8)&0xFF)|((prm_1<<8)&0xFF00))
 return
 
 #defcfunc local comet2getaddrx
-register(9,vmidtmp)++:return (wpeek(register((peek(opcodetemp,0)>>0)&0xF,vmidtmp),0)*(((peek(opcodetemp,0)>>0)&0xF)!=0))+comet2memread(register(9,vmidtmp)-1)
+register(9,vmidtmp)++:return ((wpeek(register((peek(opcodetemp,0)>>0)&0xF,vmidtmp),0)*(((peek(opcodetemp,0)>>0)&0xF)!=0))+comet2memread(register(9,vmidtmp)-1))&0xFFFF
 
 #ifdef comet2memaccess
 #deffunc comet2run var address,int vmid
@@ -111,61 +111,61 @@ wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14
 return
 
 *opcode_20
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)+comet2memread(comet2getaddrx())
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)+comet2memread(comet2getaddrx())
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_21
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)-comet2memread(comet2getaddrx())
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)-comet2memread(comet2getaddrx())
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_22
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)+comet2memread(comet2getaddrx())
-wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&2)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)+comet2memread(comet2getaddrx())
+wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_23
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)-comet2memread(comet2getaddrx())
-wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&2)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)-comet2memread(comet2getaddrx())
+wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_24
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)+register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)
-wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&2)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)+(register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)&0xFFFF)
+wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_25
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)-register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)
-wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&2)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)-(register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)&0xFFFF)
+wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_26
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)+register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)
-wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&2)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)+(register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)&0xFFFF)
+wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_27
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)-register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)
-wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&2)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)-(register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)&0xFFFF)
+wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 
 *opcode_30
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&comet2memread(comet2getaddrx())
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)&comet2memread(comet2getaddrx())
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_31
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)|comet2memread(comet2getaddrx())
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)|comet2memread(comet2getaddrx())
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_32
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)^comet2memread(comet2getaddrx())
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)^comet2memread(comet2getaddrx())
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 
 *opcode_34
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)&(register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)&0xFFFF)
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_35
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)|register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)|(register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)&0xFFFF)
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_36
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)^register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)^(register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)&0xFFFF)
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 
@@ -189,19 +189,22 @@ wpoke register(10,vmidtmp),0,((calctemp>>14)&6)|(((calctemp&0xFFFF)=0)&1)
 return
 
 *opcode_50
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)<<comet2getaddrx())&0x7FFF)
+overflowtemp=(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x4000)!0
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x8000)|((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)<<comet2getaddrx())&0x7FFF)|(overflowtemp<<16)
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_51
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>comet2getaddrx())&0x7FFF)|(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x8000)
+overflowtemp=(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x0001)!0
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>comet2getaddrx())&0x7FFF)|(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x8000)|(overflowtemp<<16)
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_52
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)<<comet2getaddrx())&0xFFFF)
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)<<comet2getaddrx())&0x1FFFF)
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_53
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>comet2getaddrx())&0xFFFF)
+overflowtemp=(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x0001)!0
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>comet2getaddrx())&0xFFFF)|(overflowtemp<<16)
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 
