@@ -189,13 +189,15 @@ wpoke register(10,vmidtmp),0,((calctemp>>14)&6)|(((calctemp&0xFFFF)=0)&1)
 return
 
 *opcode_50
-overflowtemp=(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x4000)!0
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x8000)|((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)<<comet2getaddrx())&0x7FFF)|(overflowtemp<<16)
+addresstemp=comet2getaddrx()
+overflowtemp=((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)<<addresstemp)&0x4000)!0
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x8000)|((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)<<addresstemp)&0x7FFF)|(overflowtemp<<16)
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_51
-overflowtemp=(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x0001)!0
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>comet2getaddrx())&0x7FFF)|(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x8000)|(overflowtemp<<16)
+addresstemp=comet2getaddrx()
+overflowtemp=((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>addresstemp)&0x0001)!0
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>addresstemp)&0x7FFF)|(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x8000)|(overflowtemp<<16)
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_52
@@ -203,8 +205,9 @@ lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetem
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 *opcode_53
-overflowtemp=(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0x0001)!0
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>comet2getaddrx())&0xFFFF)|(overflowtemp<<16)
+addresstemp=comet2getaddrx()
+overflowtemp=((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>addresstemp)&0x0001)!0
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>addresstemp)&0xFFFF)|(overflowtemp<<16)
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 
