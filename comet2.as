@@ -87,9 +87,9 @@ register(9,vmidtmp)++:return ((wpeek(register((peek(opcodetemp,0)>>0)&0xF,vmidtm
 #deffunc comet2run var address,var memory,int vmid
 dup memoryiex,memory
 #endif
-addressold=lpeek(address,0):vmidtmp=vmid:register(9,vmidtmp)=address:opcodetemp=comet2memread(register(9,vmidtmp)):register(9,vmidtmp)++
+addressold=wpeek(address,0):vmidtmp=vmid:register(9,vmidtmp)=address:opcodetemp=comet2memread(register(9,vmidtmp)):register(9,vmidtmp)++
 gosub opcode(peek(opcodetemp,1))
-address=register(9,vmidtmp)
+address=(address&0xFFFF0000)|(register(9,vmidtmp)&0xFFFF)
 return address-addressold
 
 *opcode_00
@@ -106,7 +106,7 @@ return
 lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,comet2getaddrx()
 return
 *opcode_14
-lpoke register((peek(opcodetemp,0)>>4)&0xF),0,register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)
+lpoke register((peek(opcodetemp,0)>>4)&0xF),0,(register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)&0xFFFF)
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&2)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 
@@ -175,7 +175,7 @@ calctemp=((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)|(0xFFFF0000*((r
 wpoke register(10,vmidtmp),0,((calctemp>>14)&6)|(((calctemp&0xFFFF)=0)&1)
 return
 *opcode_41
-calctemp=register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)-comet2memread(comet2getaddrx())
+calctemp=(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)-comet2memread(comet2getaddrx())
 wpoke register(10,vmidtmp),0,((calctemp>>14)&6)|(((calctemp&0xFFFF)=0)&1)
 return
 
@@ -184,7 +184,7 @@ calctemp=((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)|(0xFFFF0000*((r
 wpoke register(10,vmidtmp),0,((calctemp>>14)&6)|(((calctemp&0xFFFF)=0)&1)
 return
 *opcode_45
-calctemp=register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)-register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)
+calctemp=(register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)-(register((peek(opcodetemp,0)>>0)&0xF,vmidtmp)&0xFFFF)
 wpoke register(10,vmidtmp),0,((calctemp>>14)&6)|(((calctemp&0xFFFF)=0)&1)
 return
 
