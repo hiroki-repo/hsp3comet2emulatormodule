@@ -83,8 +83,10 @@ register(9,vmidtmp)++:return ((wpeek(register((peek(opcodetemp,0)>>0)&0xF,vmidtm
 
 #ifdef comet2memaccess
 #deffunc comet2run var address,int vmid
+#defcfunc comet2run_c var address,int vmid
 #else
 #deffunc comet2run var address,var memory,int vmid
+#defcfunc comet2run_c var address,var memory,int vmid
 dup memoryiex,memory
 #endif
 addressold=wpeek(address,0):vmidtmp=vmid:register(9,vmidtmp)=address:opcodetemp=comet2memread(register(9,vmidtmp)):register(9,vmidtmp)++
