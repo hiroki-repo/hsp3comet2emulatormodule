@@ -79,7 +79,7 @@ wpoke memoryiex,((prm_0&0xFFFF)*2),(((prm_1>>8)&0xFF)|((prm_1<<8)&0xFF00))
 return
 
 #defcfunc local comet2getaddrx
-register(9,vmidtmp)++:return (wpeek(register((peek(opcodetemp,1)>>0)&0xF,vmidtmp),0)*(((peek(opcodetemp,1)>>0)&0xF)!=0))+comet2memread(register(9,vmidtmp)-1)
+register(9,vmidtmp)++:return (wpeek(register((peek(opcodetemp,0)>>0)&0xF,vmidtmp),0)*(((peek(opcodetemp,0)>>0)&0xF)!=0))+comet2memread(register(9,vmidtmp)-1)
 
 #ifdef comet2memaccess
 #deffunc comet2run var address,int vmid
