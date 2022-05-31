@@ -55,7 +55,15 @@ opcode(0x81)=*opcode_81
 
 opcode(0xf0)=*opcode_f0
 ldim svcptr,0
+svcptr=*svchandleritl
 return
+
+*svchandleritl
+register(12,vmidtmp)=stat
+register(13,vmidtmp)=register(9,vmidtmp)
+register(9,vmidtmp)=register(11,vmidtmp)
+return
+
 *opcode_invalid
 return
 
