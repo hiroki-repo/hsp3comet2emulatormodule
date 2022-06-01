@@ -225,6 +225,7 @@ if src=-1{/*poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((op
 switch sourcesliced3(0)
 case "START"
 startlet=1:opcodestarts=getaddrfromtext(sourcesliced4(0)):opcodepos=opcodestarts
+if sourcesliced2(0)!=""{labelist(labelistpos-1)=sourcesliced2(0):labelistx(labelistpos-1)=opcodepos}
 swbreak
 swend
 }
