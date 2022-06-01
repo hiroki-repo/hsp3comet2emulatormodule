@@ -1,6 +1,6 @@
 #include "hsp3cl.as"
 #packopt name "casl2asm"
-#packopt orgpath 0
+#packopt orgpath 1
 #module
 #defcfunc getregidfromname str prm_0
 prm_0x=prm_0
@@ -94,8 +94,14 @@ sourceslicedposxxx=0
 if sourcesliced2(0)=sourcesliced and sourcesliced2(1)="" {sourcesliced2(0)="":repeat strlen(sourcesliced):if strmid(sourcesliced,cnt,1)=" "{cnt4chkpls=0:cnt4chk=cnt:repeat:if strmid(sourcesliced,cnt4chk+cnt,1)=" "{}else{cnt4chkpls=cnt:break}:loop:sourceslicedposxxx++:continue cnt+cnt4chkpls}else{sourcesliced2(sourceslicedposxxx)+=strmid(sourcesliced,cnt,1)}:loop:if (sourceslicedposxxx>=2){repeat sourceslicedposxxx-1:sourcesliced2(1)+=" "+sourcesliced2(2+cnt):loop}}
 if sourcesliced2(0)!="" and (startlet!=0){labelist(labelistpos)=sourcesliced2(0):labelistx(labelistpos)=opcodepos:labelistpos++}
 if sourcesliced2(1)==""{sourcesliced2(1)=sourcesliced2(0)}
+if strmid(sourcesliced2(1),0,1)=";"{continue cnt+1}
 sdim sourcesliced3,256,32
 split sourcesliced2(1)," ",sourcesliced3
+sourcesliced3optbased=""
+repeat 31
+sourcesliced3optbased+=sourcesliced3(1+cnt)
+loop
+memexpand sourcesliced3optbased,varsize(sourcesliced3optbased)+1
 repeat 30
 sourcesliced3(1)+=sourcesliced3(2+cnt)
 loop
@@ -210,8 +216,10 @@ swbreak
 case "DC"
 /*srcaddr=getaddrfromtext(sourcesliced4(0))
 poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):*/
+if strmid(sourcesliced3optbased,0,1)="\'"{repeat strlen(sourcesliced3optbased)-1:if wpeek(sourcesliced3optbased,cnt+1)=0x2727{srcaddr=peek(sourcesliced3optbased,cnt+1):poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):opcodepos+=1:continue cnt+2}else{if peek(sourcesliced3optbased,cnt+1)=0x27{break}else{srcaddr=peek(sourcesliced3optbased,cnt+1):poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):opcodepos+=1}}:loop}else{
 labelist2(labelist2pos)=sourcesliced4(0):labelistx2(labelist2pos)=opcodepos:labelist2pos++
 opcodepos+=1
+}
 swbreak
 
 case "END"
@@ -240,8 +248,8 @@ poke opcodebuf,((opcodepos*2)+1),((dest&0xF)<<4)|((srcadd&0xF)<<0):opcodepos+=1
 if src=-1{/*poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):*/opcodepos+=1}
 //sourcesliced5(cnt)=strmid(sourcesliced4(0),)
 }
-pos4casl2(cnt,0)=(opcodepos-opcodeposold)
-pos4casl2(cnt,1)=opcodeposold
+pos4casl2(cnt-1,0)=(opcodepos-opcodeposold)
+pos4casl2(cnt-1,1)=opcodeposold
 /*memcpy opcodetmp,opcodebuf,(opcodepos-opcodeposold)*2,0,opcodeposold*2
 if (opcodepos-opcodeposold)=2{
 mes strf("%04d",cnt)+"("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+strf("%02X",peek(opcodetmp,2))+strf("%02X",peek(opcodetmp,3))+") : "+sourcesliced
@@ -290,14 +298,16 @@ definebuf(defineid)+=sourcesliced+"\n"
 }
 loop
 repeat labelist2pos
+if labelist2(cnt)!=""{
 srcaddr=getaddrfromtext(labelist2(cnt))
-poke opcodebuf,((labelistx2(cnt)*2)+0),peek(srcaddr,1):poke opcodebuf,((labelistx2(cnt)*2)+1),peek(srcaddr,0):
+poke opcodebuf,((labelistx2(cnt)*2)+0),peek(srcaddr,1):poke opcodebuf,((labelistx2(cnt)*2)+1),peek(srcaddr,0)
+}
 loop
 notesel source
 repeat notemaxx
 if pos4casl2(cnt,1){
 noteget sourcesliced,cnt
-memcpy opcodetmp,opcodebuf,pos4casl2(cnt,0)*2,0,pos4casl2(cnt,1)*2
+if pos4casl2(cnt,0)<=2{memcpy opcodetmp,opcodebuf,pos4casl2(cnt,0)*2,0,pos4casl2(cnt,1)*2}else{opcodetmp=0}
 if pos4casl2(cnt,0)=2{
 mes strf("%04d",cnt)+"("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+strf("%02X",peek(opcodetmp,2))+strf("%02X",peek(opcodetmp,3))+") "+tab+""+sourcesliced
 }else{
@@ -311,4 +321,7 @@ sdim code,codesize
 memcpy code,opcodebuf,codesize,0,(opcodestarts*2)
 bsave getpath(fname4ass,1)+".bin",code
 mes "Assemble successful!"
+#ifdef _debug
+stop
+#endif
 end
