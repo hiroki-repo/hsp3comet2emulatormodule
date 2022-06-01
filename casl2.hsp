@@ -96,6 +96,7 @@ src=0:dest=0:srcadd=0
 lineid=cnt
 noteget sourcesliced,cnt
 sdim sourcesliced2,256,32
+repeat strlen(sourcesliced):if peek(sourcesliced,cnt)=0x09{poke sourcesliced,cnt,' '}else{poke sourcesliced,cnt,peek(sourcesliced,cnt)}:loop
 split sourcesliced,tab,sourcesliced2
 sourceslicedposxxx=0
 if sourcesliced2(0)=sourcesliced and sourcesliced2(1)="" {sourcesliced2(0)="":repeat strlen(sourcesliced):if strmid(sourcesliced,cnt,1)=" "{cnt4chkpls=0:cnt4chk=cnt:repeat:if strmid(sourcesliced,cnt4chk+cnt,1)=" "{}else{cnt4chkpls=cnt:break}:loop:sourceslicedposxxx++:continue cnt+cnt4chkpls}else{sourcesliced2(sourceslicedposxxx)+=strmid(sourcesliced,cnt,1)}:loop:if (sourceslicedposxxx>=2){repeat sourceslicedposxxx-1:sourcesliced2(1)+=" "+sourcesliced2(2+cnt):loop}}
@@ -256,7 +257,7 @@ definebuf4edit=strmid(definebuf4edit,0,macrochk)+sourcesliced4(cnt)+strmid(defin
 loop
 if macrochkxor=-1{break}
 loop
-mes definebuf4edit
+//mes definebuf4edit
 noteadd definebuf4edit,cnt,1:notemaxx=notemax:continue cnt}
 swbreak
 
