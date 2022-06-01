@@ -42,7 +42,7 @@ mes "at line:"+str(lineid@)
 end
 return 0
 #global
-mes "Gocaine CASL II Asembler Ver 1.01"
+mes "Gocaine CASL II Asembler Ver 1.02"
 sourceassembled=""
 tab="	"
 sdim definebuf,65536,256
@@ -343,12 +343,12 @@ if pos4casl2(cnt,1)!-1{
 noteget sourcesliced,cnt
 if pos4casl2(cnt,0)<=2{memcpy opcodetmp,opcodebuf,pos4casl2(cnt,0)*2,0,pos4casl2(cnt,1)*2
 if pos4casl2(cnt,0)=2{
-mes strf("%04d",cnt)+"("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+strf("%02X",peek(opcodetmp,2))+strf("%02X",peek(opcodetmp,3))+") "+tab+""+sourcesliced
+mes strf("%04d",pos4casl2(cnt,1))+"h ("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+strf("%02X",peek(opcodetmp,2))+strf("%02X",peek(opcodetmp,3))+") "+tab+""+sourcesliced
 }else{
-mes strf("%04d",cnt)+"("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+") "+tab+""+sourcesliced
+mes strf("%04d",pos4casl2(cnt,1))+"h ("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+") "+tab+""+sourcesliced
 }
 }else{opcodetmp=0
-mes strf("%04d",cnt)+"(????) "+tab+""+sourcesliced
+mes strf("%04d",pos4casl2(cnt,1))+"h (????) "+tab+""+sourcesliced
 }
 }
 loop
