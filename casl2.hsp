@@ -1,3 +1,5 @@
+#include "hsp3cl.as"
+#packopt name "casl2asm"
 #module
 #defcfunc getregidfromname str prm_0
 prm_0x=prm_0
@@ -31,10 +33,12 @@ repeat 4096:if labelist@(cnt)=prm_0{cnt4lb=cnt:break}:loop
 return labelistx@(cnt4lb)
 #defcfunc getaddrfromtext str prm_0_
 prm_0_x=prm_0_
-if strmid(prm_0_x,0,1)="#"{return int("$"+strmid(prm_0_x,1,4))}else{if peek(prm_0_x,0)>=48 and peek(prm_0_x,0)<=57{return int(prm_0_x)}else{return getpointerfromlb(prm_0_x)}}
+if strmid(prm_0_x,0,1)="#"{return int("$"+strmid(prm_0_x,1,strlen(prm_0_x)))}else{if peek(prm_0_x,0)>=48 and peek(prm_0_x,0)<=57{return int(prm_0_x)}else{return getpointerfromlb(prm_0_x)}}
 return -1
 #deffunc errorhappened int prm_0
-mes "Syntax error"
+mes "Syntax error",1
+mes "at line:"+str(lineid@)
+end
 return 0
 #global
 tab="	"
@@ -50,37 +54,55 @@ sdim labelist,256,4096
 dim labelistx,4096
 sdim labelist2,256,16384
 dim labelistx2,16384
-labelistpos=0:labelist2pos=0:opcodepos=0
+labelistpos=0:labelist2pos=0:opcodepos=0:startlet=0
 
-source={"
-A	LD GR0,B
-	SVC #1234
+/*source={"PROG0	START #0
+A	LD GR0,C
+\	SVC #1234
 B	LD GR1,GR2
-	LAD SP,#FFF0
-	RET
-	DS 3
-	DC #F212
-"}
+\	LAD SP,#FFF0
+\	RET
+C   LD GR2,GR3
+\	DS 3
+\	DC #F212
+\	END
+"}*/
+
+fname4ass=dir_cmdline
+
+repeat:if strmid(fname4ass,0,1)=" "{fname4ass=strmid(fname4ass,1,strlen(fname4ass))}else{break}:loop
+if fname4ass=""{mes "Usage:casl2asm [File name of source code file]":end}
+exist fname4ass
+if strsize=-1{mes "File not found...":end}
 
 notesel source
+noteload fname4ass
 notemaxx=notemax
 repeat notemaxx
+lineid=cnt
 noteget sourcesliced,cnt
 sdim sourcesliced2,256,32
 split sourcesliced,tab,sourcesliced2
+sourceslicedposxxx=0
+if sourcesliced2(0)=sourcesliced and sourcesliced2(1)="" {sourcesliced2(0)="":repeat strlen(sourcesliced):if strmid(sourcesliced,cnt,1)=" "{cnt4chkpls=0:cnt4chk=cnt:repeat:if strmid(sourcesliced,cnt4chk+cnt,1)=" "{}else{cnt4chkpls=cnt:break}:loop:sourceslicedposxxx++:continue cnt+cnt4chkpls}else{sourcesliced2(sourceslicedposxxx)+=strmid(sourcesliced,cnt,1)}:loop:if (sourceslicedposxxx>=2){repeat sourceslicedposxxx-1:sourcesliced2(1)+=" "+sourcesliced2(2+cnt):loop}}
 if sourcesliced2(0)!=""{labelist(labelistpos)=sourcesliced2(0):labelistx(labelistpos)=opcodepos:labelistpos++}
 if sourcesliced2(1)==""{sourcesliced2(1)=sourcesliced2(0)}
+sdim sourcesliced3,256,32
 split sourcesliced2(1)," ",sourcesliced3
 repeat 30
 sourcesliced3(1)+=sourcesliced3(2+cnt)
 loop
+sdim sourcesliced33,256,32
 split sourcesliced3(1),";",sourcesliced33
 sourcesliced3sk="":repeat strlen(sourcesliced3(0)):sourcesliced3sksliced=""+strmid(sourcesliced3(0),cnt,1):if peek(sourcesliced3sksliced,0)>='a' and peek(sourcesliced3sksliced,0)<='z'{poke sourcesliced3sksliced,0,peek(sourcesliced3sksliced)-32}:sourcesliced3sk+=sourcesliced3sksliced:loop
 sourcesliced3sk2="":repeat strlen(sourcesliced33(0)):sourcesliced3sksliced=""+strmid(sourcesliced33(0),cnt,1):if peek(sourcesliced3sksliced,0)>='a' and peek(sourcesliced3sksliced,0)<='z'{poke sourcesliced3sksliced,0,peek(sourcesliced3sksliced)-32}:sourcesliced3sk2+=sourcesliced3sksliced:loop
 sdim sourcesliced4,256,32
 split sourcesliced3sk2,",",sourcesliced4
+if sourcesliced3(0)!="RET"{
 if strmid(sourcesliced3(0),0,1)="J" or sourcesliced3(0)="CALL" or sourcesliced3(0)="PUSH" or sourcesliced3(0)="SVC" {sourcesliced4(2)=sourcesliced4(1):sourcesliced4(1)=sourcesliced4(0):sourcesliced4(0)="":dest=0}else{dest=getregidfromname(sourcesliced4(0))}
 src=getregidfromname(sourcesliced4(1)):if src=-1 {labelist2(labelist2pos)=sourcesliced4(1):labelistx2(labelist2pos)=opcodepos+1:labelist2pos++}//srcaddr=getaddrfromtext(sourcesliced4(1))}
+}
+if startlet{
 switch sourcesliced3(0)
 case "LD"
 if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x10}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
@@ -167,7 +189,7 @@ dest=0
 if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x80}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
 swbreak
 case "RET"
-dest=0:src=0:poke opcodebuf,((opcodepos*2)+0),0x81
+srcadd=0:dest=0:src=0:poke opcodebuf,((opcodepos*2)+0),0x81
 swbreak
 
 case "SVC"
@@ -176,7 +198,7 @@ if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2
 swbreak
 
 case "DS"
-opcodepos+=int(sourcesliced4(0))+1
+opcodepos+=int(sourcesliced4(0))
 swbreak
 case "DC"
 srcaddr=getaddrfromtext(sourcesliced4(0))
@@ -184,8 +206,13 @@ poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1
 opcodepos+=1
 swbreak
 
+case "END"
+codesize=(opcodepos-opcodestarts)*2
+startlet=0
+swbreak
+
 swend
-if sourcesliced3(0)="DS" or sourcesliced3(0)="DC"{}else{
+if sourcesliced3(0)="DS" or sourcesliced3(0)="DC" or sourcesliced3(0)="END"{}else{
 if srcadd=-1{
 poke opcodebuf,((opcodepos*2)+1),((dest&0xF)<<4)|((0x0000&0xF)<<0):opcodepos+=1
 }else{
@@ -194,8 +221,21 @@ poke opcodebuf,((opcodepos*2)+1),((dest&0xF)<<4)|((srcadd&0xF)<<0):opcodepos+=1
 if src=-1{/*poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):*/opcodepos+=1}
 //sourcesliced5(cnt)=strmid(sourcesliced4(0),)
 }
+}else{
+switch sourcesliced3(0)
+case "START"
+startlet=1:opcodestarts=getaddrfromtext(sourcesliced4(0)):opcodepos=opcodestarts
+swbreak
+swend
+}
 loop
 repeat labelist2pos
 srcaddr=getaddrfromtext(labelist2(cnt))
 poke opcodebuf,((labelistx2(cnt)*2)+0),peek(srcaddr,1):poke opcodebuf,((labelistx2(cnt)*2)+1),peek(srcaddr,0):
 loop
+
+sdim code,codesize
+memcpy code,opcodebuf,codesize,0,opcodestarts
+bsave getpath(fname4ass,1)+".bin",code
+mes "Assemble successful!"
+end
