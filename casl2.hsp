@@ -42,7 +42,10 @@ mes "at line:"+str(lineid@)
 end
 return 0
 #global
+sourceassembled=""
 tab="	"
+sdim definebuf,65536,256
+sdim defname,256,256
 sdim opcodebuf,65536*2
 sdim sources,65536
 sdim sourcesliced,4096
@@ -55,7 +58,8 @@ sdim labelist,256,4096
 dim labelistx,4096
 sdim labelist2,256,16384
 dim labelistx2,16384
-labelistpos=0:labelist2pos=0:opcodepos=0:startlet=0
+dim pos4casl2,65536,2
+defineid=0:labelistpos=0:labelist2pos=0:opcodepos=0:startlet=0
 
 /*source={"PROG0	START #0
 A	LD GR0,C
@@ -79,14 +83,16 @@ if strsize=-1{mes "File not found...":end}
 notesel source
 noteload fname4ass
 notemaxx=notemax
-repeat notemaxx
+repeat// notemaxx
+if cnt>=notemaxx{break}
+src=0:dest=0:srcadd=0
 lineid=cnt
 noteget sourcesliced,cnt
 sdim sourcesliced2,256,32
 split sourcesliced,tab,sourcesliced2
 sourceslicedposxxx=0
 if sourcesliced2(0)=sourcesliced and sourcesliced2(1)="" {sourcesliced2(0)="":repeat strlen(sourcesliced):if strmid(sourcesliced,cnt,1)=" "{cnt4chkpls=0:cnt4chk=cnt:repeat:if strmid(sourcesliced,cnt4chk+cnt,1)=" "{}else{cnt4chkpls=cnt:break}:loop:sourceslicedposxxx++:continue cnt+cnt4chkpls}else{sourcesliced2(sourceslicedposxxx)+=strmid(sourcesliced,cnt,1)}:loop:if (sourceslicedposxxx>=2){repeat sourceslicedposxxx-1:sourcesliced2(1)+=" "+sourcesliced2(2+cnt):loop}}
-if sourcesliced2(0)!=""{labelist(labelistpos)=sourcesliced2(0):labelistx(labelistpos)=opcodepos:labelistpos++}
+if sourcesliced2(0)!="" and (startlet!=0){labelist(labelistpos)=sourcesliced2(0):labelistx(labelistpos)=opcodepos:labelistpos++}
 if sourcesliced2(1)==""{sourcesliced2(1)=sourcesliced2(0)}
 sdim sourcesliced3,256,32
 split sourcesliced2(1)," ",sourcesliced3
@@ -100,10 +106,11 @@ sourcesliced3sk2="":repeat strlen(sourcesliced33(0)):sourcesliced3sksliced=""+st
 sdim sourcesliced4,256,32
 split sourcesliced3sk2,",",sourcesliced4
 if sourcesliced3(0)!="RET"{
-if strmid(sourcesliced3(0),0,1)="J" or sourcesliced3(0)="CALL" or sourcesliced3(0)="PUSH" or sourcesliced3(0)="SVC" {sourcesliced4(2)=sourcesliced4(1):sourcesliced4(1)=sourcesliced4(0):sourcesliced4(0)="":dest=0}else{dest=getregidfromname(sourcesliced4(0))}
-src=getregidfromname(sourcesliced4(1)):if src=-1 {labelist2(labelist2pos)=sourcesliced4(1):labelistx2(labelist2pos)=opcodepos+1:labelist2pos++}//srcaddr=getaddrfromtext(sourcesliced4(1))}
+if sourcesliced3(0)="JMI" or sourcesliced3(0)="JNZ" or sourcesliced3(0)="JZE" or sourcesliced3(0)="JUMP" or sourcesliced3(0)="JPL" or sourcesliced3(0)="JOV" or sourcesliced3(0)="CALL" or sourcesliced3(0)="PUSH" or sourcesliced3(0)="SVC" {sourcesliced4(2)=sourcesliced4(1):sourcesliced4(1)=sourcesliced4(0):sourcesliced4(0)="":dest=0}else{dest=getregidfromname(sourcesliced4(0))}
+if sourcesliced3(0)!="POP" {src=getregidfromname(sourcesliced4(1)):if src=-1 {labelist2(labelist2pos)=sourcesliced4(1):labelistx2(labelist2pos)=opcodepos+1:labelist2pos++}}//srcaddr=getaddrfromtext(sourcesliced4(1))}
 }
 if startlet{
+opcodeposold=opcodepos
 switch sourcesliced3(0)
 case "LD"
 if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x10}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
@@ -181,8 +188,7 @@ case "PUSH"
 if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x70}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
 swbreak
 case "POP"
-src=0
-if src=-1{errorhappened 0:break:srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x70}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x71}
+srcadd=0:src=0:poke opcodebuf,((opcodepos*2)+0),0x71//if src=-1{errorhappened 0:break:srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x70}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x71}
 swbreak
 
 case "CALL"
@@ -202,8 +208,9 @@ case "DS"
 opcodepos+=int(sourcesliced4(0))
 swbreak
 case "DC"
-srcaddr=getaddrfromtext(sourcesliced4(0))
-poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):
+/*srcaddr=getaddrfromtext(sourcesliced4(0))
+poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):*/
+labelist2(labelist2pos)=sourcesliced4(0):labelistx2(labelist2pos)=opcodepos:labelist2pos++
 opcodepos+=1
 swbreak
 
@@ -212,7 +219,18 @@ codesize=(opcodepos-opcodestarts)*2
 startlet=0
 swbreak
 
+case ""
+continue cnt+1
+swbreak
+
+default
+defineuseid=-1
+repeat defineid:if sourcesliced3(0)=defname(cnt){defineuseid=cnt:break}:loop
+if defineuseid!-1{noteadd definebuf(defineuseid),cnt,1:notemaxx=notemax:continue cnt}
+swbreak
+
 swend
+
 if sourcesliced3(0)="DS" or sourcesliced3(0)="DC" or sourcesliced3(0)="END"{}else{
 if srcadd=-1{
 poke opcodebuf,((opcodepos*2)+1),((dest&0xF)<<4)|((0x0000&0xF)<<0):opcodepos+=1
@@ -222,20 +240,73 @@ poke opcodebuf,((opcodepos*2)+1),((dest&0xF)<<4)|((srcadd&0xF)<<0):opcodepos+=1
 if src=-1{/*poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):*/opcodepos+=1}
 //sourcesliced5(cnt)=strmid(sourcesliced4(0),)
 }
+pos4casl2(cnt,0)=(opcodepos-opcodeposold)
+pos4casl2(cnt,1)=opcodeposold
+/*memcpy opcodetmp,opcodebuf,(opcodepos-opcodeposold)*2,0,opcodeposold*2
+if (opcodepos-opcodeposold)=2{
+mes strf("%04d",cnt)+"("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+strf("%02X",peek(opcodetmp,2))+strf("%02X",peek(opcodetmp,3))+") : "+sourcesliced
 }else{
+mes strf("%04d",cnt)+"("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+") : "+sourcesliced
+}*/
+
+//sourceassembled+=sourcesliced+"\n"
+}else{
+if indefine=0{
 switch sourcesliced3(0)
+case ".INCLUDE"
+notesel includerfromscr
+noteload sourcesliced4(0)
+noteunsel
+noteadd includerfromscr,cnt,1
+continue cnt
+swbreak
+
+case ".DEFINE"
+indefine=1
+dup sourcesliced4ba4chk,sourcesliced4(0)
+defname(defineid)=sourcesliced2(0)
+swbreak
+
+case ".ENDDEF"
+indefine=0
+defineid++
+swbreak
+
 case "START"
 startlet=1:opcodestarts=getaddrfromtext(sourcesliced4(0)):opcodepos=opcodestarts
+if labelistpos=0{labelistpos++}
 if sourcesliced2(0)!=""{labelist(labelistpos-1)=sourcesliced2(0):labelistx(labelistpos-1)=opcodepos}
 swbreak
 swend
+}else{
+if sourcesliced3(0)=".ENDDEF"{
+indefine=0
+defineid++
+}else{
+definebuf(defineid)+=sourcesliced+"\n"
+}
+
+}
 }
 loop
 repeat labelist2pos
 srcaddr=getaddrfromtext(labelist2(cnt))
 poke opcodebuf,((labelistx2(cnt)*2)+0),peek(srcaddr,1):poke opcodebuf,((labelistx2(cnt)*2)+1),peek(srcaddr,0):
 loop
+notesel source
+repeat notemaxx
+if pos4casl2(cnt,1){
+noteget sourcesliced,cnt
+memcpy opcodetmp,opcodebuf,pos4casl2(cnt,0)*2,0,pos4casl2(cnt,1)*2
+if pos4casl2(cnt,0)=2{
+mes strf("%04d",cnt)+"("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+strf("%02X",peek(opcodetmp,2))+strf("%02X",peek(opcodetmp,3))+") "+tab+""+sourcesliced
+}else{
+mes strf("%04d",cnt)+"("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+") "+tab+""+sourcesliced
+}
+}
+loop
 
+//mes sourceassembled
 sdim code,codesize
 memcpy code,opcodebuf,codesize,0,(opcodestarts*2)
 bsave getpath(fname4ass,1)+".bin",code
