@@ -1,5 +1,6 @@
 #include "hsp3cl.as"
 #packopt name "casl2asm"
+#packopt orgpath 0
 #module
 #defcfunc getregidfromname str prm_0
 prm_0x=prm_0
