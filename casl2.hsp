@@ -1,0 +1,201 @@
+#module
+#defcfunc getregidfromname str prm_0
+prm_0x=prm_0
+if strmid(prm_0x,0,2)="GR" and int(strmid(prm_0x,2,1))<=7{return int(strmid(prm_0x,2,1))}
+switch prm_0
+case "SP"
+return 8
+swbreak
+case "PR"
+return 9
+swbreak
+case "FR"
+return 10
+swbreak
+case "SVR"
+return 11
+swbreak
+case "SVIR"
+return 12
+swbreak
+case "SVTR"
+return 13
+swbreak
+default
+return -1
+swbreak
+swend
+return -1
+#defcfunc getpointerfromlb str prm_0
+repeat 4096:if labelist@(cnt)=prm_0{cnt4lb=cnt:break}:loop
+return labelistx@(cnt4lb)
+#defcfunc getaddrfromtext str prm_0_
+prm_0_x=prm_0_
+if strmid(prm_0_x,0,1)="#"{return int("$"+strmid(prm_0_x,1,4))}else{if peek(prm_0_x,0)>=48 and peek(prm_0_x,0)<=57{return int(prm_0_x)}else{return getpointerfromlb(prm_0_x)}}
+return -1
+#deffunc errorhappened int prm_0
+mes "Syntax error"
+return 0
+#global
+tab="	"
+sdim opcodebuf,65536*2
+sdim sources,65536
+sdim sourcesliced,4096
+sdim sourcesliced2,256,32
+sdim sourcesliced3,256,32
+sdim sourcesliced4,256,32
+sdim sourcesliced5,256,32
+sdim sourcesliced33,256,32
+sdim labelist,256,4096
+dim labelistx,4096
+sdim labelist2,256,16384
+dim labelistx2,16384
+labelistpos=0:labelist2pos=0:opcodepos=0
+
+source={"
+A	LD GR0,B
+	SVC #1234
+B	LD GR1,GR2
+	LAD SP,#FFF0
+	RET
+	DS 3
+	DC #F212
+"}
+
+notesel source
+notemaxx=notemax
+repeat notemaxx
+noteget sourcesliced,cnt
+sdim sourcesliced2,256,32
+split sourcesliced,tab,sourcesliced2
+if sourcesliced2(0)!=""{labelist(labelistpos)=sourcesliced2(0):labelistx(labelistpos)=opcodepos:labelistpos++}
+if sourcesliced2(1)==""{sourcesliced2(1)=sourcesliced2(0)}
+split sourcesliced2(1)," ",sourcesliced3
+repeat 30
+sourcesliced3(1)+=sourcesliced3(2+cnt)
+loop
+split sourcesliced3(1),";",sourcesliced33
+sourcesliced3sk="":repeat strlen(sourcesliced3(0)):sourcesliced3sksliced=""+strmid(sourcesliced3(0),cnt,1):if peek(sourcesliced3sksliced,0)>='a' and peek(sourcesliced3sksliced,0)<='z'{poke sourcesliced3sksliced,0,peek(sourcesliced3sksliced)-32}:sourcesliced3sk+=sourcesliced3sksliced:loop
+sourcesliced3sk2="":repeat strlen(sourcesliced33(0)):sourcesliced3sksliced=""+strmid(sourcesliced33(0),cnt,1):if peek(sourcesliced3sksliced,0)>='a' and peek(sourcesliced3sksliced,0)<='z'{poke sourcesliced3sksliced,0,peek(sourcesliced3sksliced)-32}:sourcesliced3sk2+=sourcesliced3sksliced:loop
+sdim sourcesliced4,256,32
+split sourcesliced3sk2,",",sourcesliced4
+if strmid(sourcesliced3(0),0,1)="J" or sourcesliced3(0)="CALL" or sourcesliced3(0)="PUSH" or sourcesliced3(0)="SVC" {sourcesliced4(2)=sourcesliced4(1):sourcesliced4(1)=sourcesliced4(0):sourcesliced4(0)="":dest=0}else{dest=getregidfromname(sourcesliced4(0))}
+src=getregidfromname(sourcesliced4(1)):if src=-1 {labelist2(labelist2pos)=sourcesliced4(1):labelistx2(labelist2pos)=opcodepos+1:labelist2pos++}//srcaddr=getaddrfromtext(sourcesliced4(1))}
+switch sourcesliced3(0)
+case "LD"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x10}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+case "LAD"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x12}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+case "ST"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x11}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+
+case "ADDA"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x20}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x24}
+swbreak
+case "SUBA"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x21}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x25}
+swbreak
+case "ADDL"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x22}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x26}
+swbreak
+case "SUBL"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x23}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x27}
+swbreak
+
+case "AND"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x30}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x34}
+swbreak
+case "OR"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x31}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x35}
+swbreak
+case "XOR"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x32}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x36}
+swbreak
+
+case "CPA"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x40}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x44}
+swbreak
+case "CPL"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x41}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x45}
+swbreak
+
+case "SLA"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x50}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+case "SRA"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x51}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+case "SLL"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x52}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+case "SRL"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x53}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+
+case "JMI"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x61}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+case "JNZ"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x62}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+case "JZE"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x63}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+case "JUMP"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x64}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+case "JPL"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x65}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+case "JOV"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x66}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+
+case "PUSH"
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x70}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+case "POP"
+src=0
+if src=-1{errorhappened 0:break:srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x70}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x71}
+swbreak
+
+case "CALL"
+dest=0
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x80}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+case "RET"
+dest=0:src=0:poke opcodebuf,((opcodepos*2)+0),0x81
+swbreak
+
+case "SVC"
+dest=0
+if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0xF0}else{errorhappened 0:break:srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
+swbreak
+
+case "DS"
+opcodepos+=int(sourcesliced4(0))+1
+swbreak
+case "DC"
+srcaddr=getaddrfromtext(sourcesliced4(0))
+poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):
+opcodepos+=1
+swbreak
+
+swend
+if sourcesliced3(0)="DS" or sourcesliced3(0)="DC"{}else{
+if srcadd=-1{
+poke opcodebuf,((opcodepos*2)+1),((dest&0xF)<<4)|((0x0000&0xF)<<0):opcodepos+=1
+}else{
+poke opcodebuf,((opcodepos*2)+1),((dest&0xF)<<4)|((srcadd&0xF)<<0):opcodepos+=1
+}
+if src=-1{/*poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):*/opcodepos+=1}
+//sourcesliced5(cnt)=strmid(sourcesliced4(0),)
+}
+loop
+repeat labelist2pos
+srcaddr=getaddrfromtext(labelist2(cnt))
+poke opcodebuf,((labelistx2(cnt)*2)+0),peek(srcaddr,1):poke opcodebuf,((labelistx2(cnt)*2)+1),peek(srcaddr,0):
+loop

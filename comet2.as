@@ -217,7 +217,7 @@ return
 *opcode_53
 addresstemp=comet2getaddrx()
 overflowtemp=((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>(addresstemp-1))&0x0001)!0
-lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>addresstemp)&0xFFFF)|(overflowtemp<<16)
+lpoke register((peek(opcodetemp,0)>>4)&0xF,vmidtmp),0,(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)>>addresstemp)&0xFFFF)|(overflowtemp<<16)
 wpoke register(10,vmidtmp),0,((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)>>14)&6)|(((register((peek(opcodetemp,0)>>4)&0xF,vmidtmp)&0xFFFF)=0)&1)
 return
 
