@@ -59,6 +59,7 @@ dim labelistx,4096
 sdim labelist2,256,16384
 dim labelistx2,16384
 dim pos4casl2,65536,2
+repeat 65536:pos4casl2(cnt,1)=-1:loop
 defineid=0:labelistpos=0:labelist2pos=0:opcodepos=0:startlet=0
 
 /*source={"PROG0	START #0
@@ -272,8 +273,10 @@ poke opcodebuf,((opcodepos*2)+1),((dest&0xF)<<4)|((srcadd&0xF)<<0):opcodepos+=1
 if src=-1{/*poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):*/opcodepos+=1}
 //sourcesliced5(cnt)=strmid(sourcesliced4(0),)
 }
-pos4casl2(cnt-1,0)=(opcodepos-opcodeposold)
-pos4casl2(cnt-1,1)=opcodeposold
+if sourcesliced3(0)!="END"{
+pos4casl2(cnt,0)=(opcodepos-opcodeposold)
+pos4casl2(cnt,1)=opcodeposold
+}
 /*memcpy opcodetmp,opcodebuf,(opcodepos-opcodeposold)*2,0,opcodeposold*2
 if (opcodepos-opcodeposold)=2{
 mes strf("%04d",cnt)+"("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+strf("%02X",peek(opcodetmp,2))+strf("%02X",peek(opcodetmp,3))+") : "+sourcesliced
@@ -313,6 +316,7 @@ swend
 }else{
 if sourcesliced3(0)=".ENDDEF"{
 indefine=0
+definebuf(defineid)=strmid(definebuf(defineid),0,strlen(definebuf(defineid))-2)
 defineid++
 }else{
 definebuf(defineid)+=sourcesliced+"\n"
@@ -329,13 +333,16 @@ poke opcodebuf,((labelistx2(cnt)*2)+0),peek(srcaddr,1):poke opcodebuf,((labelist
 loop
 notesel source
 repeat notemaxx
-if pos4casl2(cnt,1){
+if pos4casl2(cnt,1)!-1{
 noteget sourcesliced,cnt
-if pos4casl2(cnt,0)<=2{memcpy opcodetmp,opcodebuf,pos4casl2(cnt,0)*2,0,pos4casl2(cnt,1)*2}else{opcodetmp=0}
+if pos4casl2(cnt,0)<=2{memcpy opcodetmp,opcodebuf,pos4casl2(cnt,0)*2,0,pos4casl2(cnt,1)*2
 if pos4casl2(cnt,0)=2{
 mes strf("%04d",cnt)+"("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+strf("%02X",peek(opcodetmp,2))+strf("%02X",peek(opcodetmp,3))+") "+tab+""+sourcesliced
 }else{
 mes strf("%04d",cnt)+"("+strf("%02X",peek(opcodetmp,0))+strf("%02X",peek(opcodetmp,1))+") "+tab+""+sourcesliced
+}
+}else{opcodetmp=0
+mes strf("%04d",cnt)+"(????) "+tab+""+sourcesliced
 }
 }
 loop
