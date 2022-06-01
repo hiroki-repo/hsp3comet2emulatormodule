@@ -235,7 +235,7 @@ poke opcodebuf,((labelistx2(cnt)*2)+0),peek(srcaddr,1):poke opcodebuf,((labelist
 loop
 
 sdim code,codesize
-memcpy code,opcodebuf,codesize,0,opcodestarts
+memcpy code,opcodebuf,codesize,0,(opcodestarts*2)
 bsave getpath(fname4ass,1)+".bin",code
 mes "Assemble successful!"
 end
