@@ -241,7 +241,23 @@ swbreak
 default
 defineuseid=-1
 repeat defineid:if sourcesliced3(0)=defname(cnt){defineuseid=cnt:break}:loop
-if defineuseid!-1{noteadd definebuf(defineuseid),cnt,1:notemaxx=notemax:continue cnt}
+//dialog defineuseid
+if defineuseid!-1{
+definebuf4edit=""+definebuf(defineuseid)
+breaksign4mcr=0
+repeat
+macrochkxor=0
+repeat 32
+macroname="%"+str(cnt)+"%"
+macrochk=instr(definebuf4edit,0,macroname)
+if macrochk=-1{macrochkxor|=macrochk}else{macrochkxor&=macrochk
+definebuf4edit=strmid(definebuf4edit,0,macrochk)+sourcesliced4(cnt)+strmid(definebuf4edit,macrochk+strlen(macroname),macrochk)
+}
+loop
+if macrochkxor=-1{break}
+loop
+mes definebuf4edit
+noteadd definebuf4edit,cnt,1:notemaxx=notemax:continue cnt}
 swbreak
 
 swend
@@ -278,7 +294,7 @@ swbreak
 
 case ".DEFINE"
 indefine=1
-dup sourcesliced4ba4chk,sourcesliced4(0)
+dup sourcesliced4ba4chk,sourcesliced4
 defname(defineid)=sourcesliced2(0)
 swbreak
 
