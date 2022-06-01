@@ -253,7 +253,7 @@ repeat 32
 macroname="%"+str(cnt)+"%"
 macrochk=instr(definebuf4edit,0,macroname)
 if macrochk=-1{macrochkxor|=macrochk}else{macrochkxor&=macrochk
-definebuf4edit=strmid(definebuf4edit,0,macrochk)+sourcesliced4(cnt)+strmid(definebuf4edit,macrochk+strlen(macroname),macrochk)
+definebuf4edit=strmid(definebuf4edit,0,macrochk)+sourcesliced4(cnt)+strmid(definebuf4edit,macrochk+strlen(macroname),strlen(definebuf4edit))
 }
 loop
 if macrochkxor=-1{break}
