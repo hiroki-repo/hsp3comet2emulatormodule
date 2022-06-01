@@ -80,8 +80,15 @@ if fname4ass=""{mes "Usage:casl2asm [File name of source code file]":end}
 exist fname4ass
 if strsize=-1{mes "File not found...":end}
 
-notesel source
+notesel sourcebase4macro
 noteload fname4ass
+noteunsel
+notesel source
+exist dir_exe+"\\casl2def.cas"
+if strsize!-1{
+noteload dir_exe+"\\casl2def.cas"
+}
+source+="\n"+sourcebase4macro
 notemaxx=notemax
 repeat// notemaxx
 if cnt>=notemaxx{break}
