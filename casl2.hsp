@@ -42,7 +42,7 @@ mes "at line:"+str(lineid@)
 end
 return 0
 #global
-mes "Gocaine CASL II Asembler Ver 1.00"
+mes "Gocaine CASL II Asembler Ver 1.01"
 sourceassembled=""
 tab="	"
 sdim definebuf,65536,256
@@ -78,7 +78,7 @@ C   LD GR2,GR3
 fname4ass=dir_cmdline
 
 repeat:if strmid(fname4ass,0,1)=" "{fname4ass=strmid(fname4ass,1,strlen(fname4ass))}else{break}:loop
-if fname4ass=""{mes "Usage:casl2asm [File name of source code file]":end}
+if fname4ass=""{mes "Usage:casl2asm [File name of the source code file]":end}
 exist fname4ass
 if strsize=-1{mes "File not found...":end}
 
@@ -129,6 +129,10 @@ if sourcesliced3(0)!="POP" {src=getregidfromname(sourcesliced4(1)):if src=-1 {la
 if startlet{
 opcodeposold=opcodepos
 switch sourcesliced3(0)
+case "NOP"
+srcadd=0:src=0:dest=0:poke opcodebuf,((opcodepos*2)+0),0x00
+swbreak
+
 case "LD"
 if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x10}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
 swbreak
