@@ -42,7 +42,7 @@ mes "at line:"+str(lineid@)
 end
 return 0
 #global
-mes "Gocaine CASL II Asembler Ver 1.00"
+mes "Gocaine CASL II Asembler Ver 1.01"
 sourceassembled=""
 tab="	"
 sdim definebuf,65536,256
@@ -129,6 +129,10 @@ if sourcesliced3(0)!="POP" {src=getregidfromname(sourcesliced4(1)):if src=-1 {la
 if startlet{
 opcodeposold=opcodepos
 switch sourcesliced3(0)
+case "NOP"
+srcadd=0:src=0:dest=0:poke opcodebuf,((opcodepos*2)+0),0x00
+swbreak
+
 case "LD"
 if src=-1{srcadd=getregidfromname(sourcesliced4(2)):poke opcodebuf,((opcodepos*2)+0),0x10}else{srcadd=src:poke opcodebuf,((opcodepos*2)+0),0x14}
 swbreak
