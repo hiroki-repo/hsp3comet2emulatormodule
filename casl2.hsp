@@ -42,7 +42,7 @@ mes "at line:"+str(lineid@)
 end
 return 0
 #global
-mes "Gocaine CASL II Asembler Ver 1.06"
+mes "Gocaine CASL II Asembler Ver 1.07"
 sourceassembled=""
 tab="	"
 sdim definebuf,65536,256
@@ -110,7 +110,7 @@ sdim sourcesliced3,256,32
 split sourcesliced2(1)," ",sourcesliced3
 sourcesliced3optbased=""
 repeat 31
-sourcesliced3optbased+=sourcesliced3(1+cnt)
+sourcesliced3optbased+=" "+sourcesliced3(1+cnt)
 loop
 memexpand sourcesliced3optbased,varsize(sourcesliced3optbased)+1
 repeat 30
