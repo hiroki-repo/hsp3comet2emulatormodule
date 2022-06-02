@@ -124,7 +124,7 @@ sdim sourcesliced4,256,32
 split sourcesliced3sk2,",",sourcesliced4
 if sourcesliced3(0)!="RET"{
 if sourcesliced3(0)="JMI" or sourcesliced3(0)="JNZ" or sourcesliced3(0)="JZE" or sourcesliced3(0)="JUMP" or sourcesliced3(0)="JPL" or sourcesliced3(0)="JOV" or sourcesliced3(0)="CALL" or sourcesliced3(0)="PUSH" or sourcesliced3(0)="SVC" {sourcesliced4(2)=sourcesliced4(1):sourcesliced4(1)=sourcesliced4(0):sourcesliced4(0)="":dest=0}else{dest=getregidfromname(sourcesliced4(0))}
-if sourcesliced3(0)!="POP" {src=getregidfromname(sourcesliced4(1)):if src=-1 {labelist2(labelist2pos)=sourcesliced4(1):labelistx2(labelist2pos)=opcodepos+1:labelist2pos++}}//srcaddr=getaddrfromtext(sourcesliced4(1))}
+if sourcesliced3(0)!="DC" and sourcesliced3(0)!="DS" and sourcesliced3(0)!="POP" {src=getregidfromname(sourcesliced4(1)):if src=-1 {labelist2(labelist2pos)=sourcesliced4(1):labelistx2(labelist2pos)=opcodepos+1:labelist2pos++}}//srcaddr=getaddrfromtext(sourcesliced4(1))}
 }
 if startlet{
 opcodeposold=opcodepos
@@ -229,12 +229,21 @@ case "DS"
 opcodepos+=int(sourcesliced4(0))
 swbreak
 case "DC"
+embacadero=0
+repeat
 /*srcaddr=getaddrfromtext(sourcesliced4(0))
 poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):*/
-if strmid(sourcesliced3optbased,0,1)="\'"{repeat strlen(sourcesliced3optbased)-1:if wpeek(sourcesliced3optbased,cnt+1)=0x2727{srcaddr=peek(sourcesliced3optbased,cnt+1):poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):opcodepos+=1:continue cnt+2}else{if peek(sourcesliced3optbased,cnt+1)=0x27{break}else{srcaddr=peek(sourcesliced3optbased,cnt+1):poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):opcodepos+=1}}:loop}else{
-labelist2(labelist2pos)=sourcesliced4(0):labelistx2(labelist2pos)=opcodepos:labelist2pos++
+embacaderopos=instr(sourcesliced3optbased,embacadero,",")
+if strmid(sourcesliced3optbased,embacadero,1)=","{}else{
+if strmid(sourcesliced3optbased,embacadero,1)="\'"{repeat strlen(sourcesliced3optbased)-1:embacaderotmp=cnt:if wpeek(sourcesliced3optbased,cnt+1+embacadero)=0x2727{srcaddr=peek(sourcesliced3optbased,cnt+1+embacadero):poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):opcodepos+=1:continue cnt+2}else{if peek(sourcesliced3optbased,cnt+1+embacadero)=0x27{embacaderotmp=cnt:break}else{srcaddr=peek(sourcesliced3optbased,cnt+1+embacadero):poke opcodebuf,((opcodepos*2)+0),peek(srcaddr,1):poke opcodebuf,((opcodepos*2)+1),peek(srcaddr,0):opcodepos+=1}}:loop:embacadero+=embacaderotmp}else{
+if embacaderopos=-1{labelist2(labelist2pos)=sourcesliced4(0)}else{labelist2(labelist2pos)=strmid(sourcesliced3optbased,embacadero,embacaderopos):embacadero+=embacaderopos}:labelistx2(labelist2pos)=opcodepos:/*logmes labelist2(labelist2pos)+":"+strf("%04X",opcodepos)*/:labelist2pos++
 opcodepos+=1
 }
+}
+//embacaderopos=instr(sourcesliced3optbased,embacadero,",")
+if embacaderopos=-1{break}else{repeat:if peek(sourcesliced3optbased,cnt+embacadero)=','{break}:embacadero+=1:loop:embacadero+=1/*embacadero+=embacaderopos+1*/}
+//embacadero+=1
+loop
 swbreak
 
 case "END"
