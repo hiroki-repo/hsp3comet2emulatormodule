@@ -42,7 +42,7 @@ mes "at line:"+str(lineid@)
 end
 return 0
 #global
-mes "Gocaine CASL II Asembler Ver 1.08"
+mes "Gocaine CASL II Asembler Ver 1.09"
 sourceassembled=""
 tab="	"
 sdim definebuf,65536,256
